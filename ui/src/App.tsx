@@ -83,8 +83,10 @@ function App() {
     setIsLoading(true);
     
     try {
-      // coachingAgentとの対話を開始
-      const agent = mastra.getAgent('coachingAgent');
+      // // coachingAgentとの対話を開始
+      // const agent = mastra.getAgent('coachingAgent');
+      // pmAgentとの対話を開始
+      const agent = mastra.getAgent('pmAgent');
       const response = await agent.generate({
         messages: [{
           role: 'user',
@@ -107,7 +109,7 @@ function App() {
       };
       updateEntry(entryWithAssistantResponse);
     } catch (error) {
-      console.error('Error communicating with coachingAgent:', error);
+      console.error('Error communicating with pmAgent:', error);
       // エラーメッセージを表示
       const errorMessage: Message = {
         id: uuidv4(),

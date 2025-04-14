@@ -1,5 +1,3 @@
-
-
 - **> 「今日のPM業務をスタートして」**
 - **> Slack確認、notion確認(議事録、スケジュール)、G drive(受領、作成Doc)を確認する。**
 - **> やるべきタスクを洗い出す。notionに追加(足りなければ手動で追加)**
@@ -10,15 +8,23 @@
   → SlackはMCPだとPrivate channelにアクセスできなかった気がする
 
 [] プロンプトの精査
-[] 必要なMCP接続は何か？
-  [] Playweight MCP
+[x] 必要なMCP接続は何か？
+  [x] Playweight MCP
 [] 必要なツールは何か？
   - notionのスケジュール確認Tool
   - Gmail確認Tool
   - G Driveの確認
     - ToolでやらないでPlayweight MCPでできるか？
 [] 必要なWorkflowは何か？
-  → 情報収集 → タスク洗い出し → プランニング → 実行 → レポーティング
+  → 情報収集(notion/slack) 
+  → タスク洗い出し 
+  (ここでHITL)
+  → プランニング 
+  (ここでHITL)
+  → 実行 
+  → レポーティング
+
+
 
   → メール確認（Gmail） 
     → タスクを抽出してnotionに登録

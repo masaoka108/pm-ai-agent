@@ -50,7 +50,7 @@ function App() {
     if (currentEntry && !hasShownInitialMessage && currentEntry.messages.length === 0) {
       const initialMessage: Message = {
         id: uuidv4(),
-        content: '今日は目標設定する？それとも振り返りをする？',
+        content: '「XXXX」PJのPM業務をサポートします。まずは何をしましょうか？',
         role: 'assistant',
         timestamp: new Date().toISOString(),
       };

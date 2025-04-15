@@ -10,3 +10,6 @@ mastra dev
 cd ui
 pnpm install
 pnpm dev
+
+## Workflowの実行の仕方
+pnpx tsx src/mastra/workflow/index.ts

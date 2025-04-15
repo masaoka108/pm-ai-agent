@@ -5,6 +5,9 @@ import { Agent } from '@mastra/core/agent';
 import { Memory } from "@mastra/memory";
 import { MCPConfiguration } from "@mastra/mcp";
 
+import { Step, Workflow } from "@mastra/core/workflows";
+import { z } from "zod";
+
 // Google Gemini AIプロバイダーの作成
 export const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY || "",

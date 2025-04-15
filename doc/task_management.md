@@ -4,17 +4,15 @@
 - **> それぞれのタスクについてAIエージェントが自律的にこなしていく。
 プランニング->実行をループしてタスク終了まで遂行する。->メール送信などにんげんの確認が必要なもの、相談が必要なものはHuman in the loopで確認して進行->完了したらSlackで連絡する。**
 
-[] 設定（Notion、Gmail、G Drive）を入力する画面
-  → SlackはMCPだとPrivate channelにアクセスできなかった気がする
+[] 設定（Slack、Notion （Gmail、G Drive））を入力する画面
+  -  Notion
+    - ログイン情報
+    - 議事録DBのURL
+    - スケジュールDBのURL
+  - Slack
+    - ログイン情報
+    - チャンネル名
 
-[] プロンプトの精査
-[x] 必要なMCP接続は何か？
-  [x] Playweight MCP
-[] 必要なツールは何か？
-  - notionのスケジュール確認Tool
-  - Gmail確認Tool
-  - G Driveの確認
-    - ToolでやらないでPlayweight MCPでできるか？
 [] 必要なWorkflowは何か？
   → 情報収集(notion/slack) 
   → タスク洗い出し 
@@ -23,6 +21,18 @@
   (ここでHITL)
   → 実行 
   → レポーティング
+
+
+[] プロンプトの精査
+[] 必要なツールは何か？
+  - notionのスケジュール確認Tool
+  - Gmail確認Tool
+  - G Driveの確認
+    - ToolでやらないでPlayweight MCPでできるか？
+
+[x] 必要なMCP接続は何か？
+  [x] Playweight MCP
+  → SlackはMCPだとPrivate channelにアクセスできなかった気がする
 
 
 

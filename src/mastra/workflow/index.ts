@@ -1,8 +1,24 @@
 import { Step, Workflow } from "@mastra/core/workflows";
 import { z } from "zod";
+import { copywriterStep, editorStep } from "../agents";
 
 
-
+export const myWorkflow = new Workflow({
+  name: "my-workflow",
+  triggerSchema: z.object({
+    topic: z.string(),
+  }),
+});
+ 
+// Run steps sequentially.
+myWorkflow.step(copywriterStep).then(editorStep).commit();
+ 
+const { runId, start } = myWorkflow.createRun();
+ 
+// const res = await start({
+//   triggerData: { topic: "React JavaScript frameworks" },
+// });
+// console.log("Results: ", res.results);
 
 
 // // workflow-with-sequential-steps
@@ -97,3 +113,6 @@ import { z } from "zod";
 // });
  
 // console.log(res.results);
+
+
+

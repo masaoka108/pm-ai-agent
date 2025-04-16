@@ -4,15 +4,6 @@
 - **> それぞれのタスクについてAIエージェントが自律的にこなしていく。
 プランニング->実行をループしてタスク終了まで遂行する。->メール送信などにんげんの確認が必要なもの、相談が必要なものはHuman in the loopで確認して進行->完了したらSlackで連絡する。**
 
-[] 設定（Slack、Notion （Gmail、G Drive））を入力する画面
-  -  Notion
-    - ログイン情報
-    - 議事録DBのURL
-    - スケジュールDBのURL
-  - Slack
-    - ログイン情報
-    - チャンネル名
-
 [] 必要なWorkflowは何か？
   → 情報収集(notion/slack) 
   → タスク洗い出し 
@@ -21,6 +12,18 @@
   (ここでHITL)
   → 実行 
   → レポーティング
+
+    Multi Agent Workflowで実現する
+    https://mastra.ai/examples/agents/multi-agent-workflow
+
+[] 設定（Slack、Notion （Gmail、G Drive））を入力する画面
+  -  Notion
+    - ログイン情報
+    - 議事録DBのURL
+    - スケジュールDBのURL
+  - Slack
+    - ログイン情報
+    - チャンネル名
 
 
 [] プロンプトの精査

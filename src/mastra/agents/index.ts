@@ -58,7 +58,7 @@ const mcp = new MCPConfiguration({
 
 //       Your primary function is to help users get weather details for specific locations. When responding:
 //       - Always ask for a location if none is provided
-//       - If the location name isn’t in English, please translate it
+//       - If the location name isn't in English, please translate it
 //       - If giving a location with multiple parts (e.g. "New York, NY"), use the most relevant part (e.g. "New York")
 //       - Include relevant details like humidity, wind conditions, and precipitation
 //       - Keep responses concise but informative
@@ -93,18 +93,18 @@ const toolsets = await mcp.getToolsets();
 //       もしユーザーがどちらかをスキップしたいと言ったら従ってください。
 
 //       ①目標設定の質問
-//         1. 「今晩ベッドに向かう前にどんな成果が出ていれば最高の価値があるか？」  
-//         2. 「そのためにあなたが創るコンテキストは何か？」  
-//         3. 「そのコンテキストを体現する言動は何か？」（言葉や行動の違い）
+//         1. "今晩ベッドに向かう前にどんな成果が出ていれば最高の価値があるか？"  
+//         2. "そのためにあなたが創るコンテキストは何か？"  
+//         3. "そのコンテキストを体現する言動は何か？"（言葉や行動の違い）
 
 //       ②設定した目標に対しての振り返り
-//         1. 「今日1日の私のフォーカスは何だったか？」  
-//         2. 「そのために創った行動の違いは何か？」  
-//         3. 「結果はどうなったか？」  
-//         4. 「上手くいったことは何か？」  
-//         5. 「上手くいかなかったことは何か？」  
-//         6. 「この瞬間からどうすれば上手くいくか？」  
-//         7. 「なぜ上手くいくと言えるのか？（事実ベースの事例があれば最高）」
+//         1. "今日1日の私のフォーカスは何だったか？"  
+//         2. "そのために創った行動の違いは何か？"  
+//         3. "結果はどうなったか？"  
+//         4. "上手くいったことは何か？"  
+//         5. "上手くいかなかったことは何か？"  
+//         6. "この瞬間からどうすれば上手くいくか？"  
+//         7. "なぜ上手くいくと言えるのか？（事実ベースの事例があれば最高）"
 
 // `,
 //   model: openai('gpt-4o'),
@@ -156,7 +156,7 @@ export const pmAgent = new Agent({
   - 機密情報の取り扱いに注意し、公開チャネルへの不適切な情報送信は行わない。
 
   【具体的な指示例】
-  「本日のSlackに未読のメンションおよび#プロジェクト進行チャンネルの新規メッセージから、重要なタスク依頼を抽出し、タスクリストの下書きを作成してください。その上で、‘以下のタスクリストで進めます。ご確認ください。’とSlackのDMに送信する形でPMへ提示してください。」
+  "本日のSlackに未読のメンションおよび#プロジェクト進行チャンネルの新規メッセージから、重要なタスク依頼を抽出し、タスクリストの下書きを作成してください。その上で、'以下のタスクリストで進めます。ご確認ください。'とSlackのDMに送信する形でPMへ提示してください。"
 
 
 `,
@@ -190,16 +190,29 @@ const copywriterAgent = new Agent({
 export const copywriterStep = new Step({
   id: "copywriterStep",
   execute: async ({ context }) => {
-    if (!context?.triggerData?.topic) {
-      throw new Error("Topic not found in trigger data");
+    try {
+      console.log('copywriterStep開始', context);
+      
+      if (!context?.triggerData?.topic) {
+        console.error('Context:', context);
+        throw new Error("Topic not found in trigger data");
+      }
+      
+      console.log('トピック:', context.triggerData.topic);
+      
+      const result = await copywriterAgent.generate(
+        `Create a blog post about ${context.triggerData.topic}`,
+      );
+      
+      console.log("copywriter result:", result.text);
+      
+      return {
+        copy: result.text,
+      };
+    } catch (error) {
+      console.error('copywriterStep エラー:', error);
+      throw error;
     }
-    const result = await copywriterAgent.generate(
-      `Create a blog post about ${context.triggerData.topic}`,
-    );
-    console.log("copywriter result", result.text);
-    return {
-      copy: result.text,
-    };
   },
 });
 
@@ -212,15 +225,32 @@ const editorAgent = new Agent({
 export const editorStep = new Step({
   id: "editorStep",
   execute: async ({ context }) => {
-    const copy = context?.getStepResult<{ copy: number }>("copywriterStep")?.copy;
- 
-    const result = await editorAgent.generate(
-      `Edit the following blog post only returning the edited copy: ${copy}`,
-    );
-    console.log("editor result", result.text);
-    return {
-      copy: result.text,
-    };
+    try {
+      console.log('editorStep開始', context);
+      
+      const copy = context?.getStepResult<{ copy: string }>("copywriterStep")?.copy;
+      
+      if (!copy) {
+        console.error('Context:', context);
+        console.error('copywriterStepの結果がありません');
+        throw new Error("No copy to edit");
+      }
+      
+      console.log('編集するテキスト長さ:', copy.length);
+      
+      const result = await editorAgent.generate(
+        `Edit the following blog post only returning the edited copy: ${copy}`,
+      );
+      
+      console.log("editor result:", result.text);
+      
+      return {
+        copy: result.text,
+      };
+    } catch (error) {
+      console.error('editorStep エラー:', error);
+      throw error;
+    }
   },
 });
 

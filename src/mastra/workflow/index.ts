@@ -13,14 +13,15 @@ export const myWorkflow = new Workflow({
 // Run steps sequentially.
 myWorkflow.step(copywriterStep).then(editorStep).commit();
  
-const { runId, start } = myWorkflow.createRun();
+// 別途UIから実行するのでここはコメントアウト
+// const { runId, start } = myWorkflow.createRun();
  
 // const res = await start({
 //   triggerData: { topic: "React JavaScript frameworks" },
 // });
 // console.log("Results: ", res.results);
 
-
+// 以下のコードはすべてコメントアウト
 // // workflow-with-sequential-steps
 // async function main() {
   

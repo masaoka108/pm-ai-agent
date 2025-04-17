@@ -13,7 +13,7 @@
   → 実行 
   → レポーティング
 
-    Multi Agent Workflowで実現する
+    Multi Agent Workflowで実現する（WorkflowはMastra側が完全じゃないのでMastra Devを使うのはやめてオリジナルのサーバーを構築する）
     https://mastra.ai/examples/agents/multi-agent-workflow
 
 [] 設定（Slack、Notion （Gmail、G Drive））を入力する画面
@@ -49,3 +49,25 @@
       → 実行
         → 人の確認が必要な場合は確認して進める。HITL。
 [] 最初のプロンプトはどうするか？
+
+
+
+
+Mastraでブログ記事執筆のWorkflowを開発した。これがWorkflowです。
+@
+
+UIからTopicを設定して「Workflow Test」ボタンをクリックしたらチャット画面にWorkflowが作成したブログ記事が表示されるようにしたい。UIのファイルはこちら @
+
+
+WorkflowのIDは"myWorkflow"です。
+
+以下のWatch Workflowを使って実装して。workflowはstartメソッドで実行して。
+https://mastra.ai/reference/client-js/workflows#watch-workflow
+
+ーーーーーーーーーーーーーー
+
+現状、Mastraのサーバーを mastra dev で起動してバックエンドを構築して @ui フォルダでフロントを構築していました。
+これを以下に変更してください。
+
+- @reference/multi-agent-workflow を参照して フロントエンドもバックエンドもNext.js に置き換えてください。
+- 置き換えた後に不要なファイルは全て削除してください

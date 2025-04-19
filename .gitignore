@@ -2,6 +2,7 @@
 node_modules
 .pnp
 .pnp.js
+.pnpm-store/
 
 # testing
 coverage
@@ -9,10 +10,15 @@ coverage
 # production
 dist
 build
+.next/
+out/
 
 # Mastra specific
 .mastra
 *.db
+*.db-shm
+*.db-wal
+memory.db*
 
 # misc
 .DS_Store
@@ -20,19 +26,32 @@ build
 .env.local
 .env.development
 .env.development.local
+.env.test
 .env.test.local
 .env.production
 .env.production.local
 
 # logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
 # editor
-.idea
-.vscode
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 *.swp
 *.swo
 .cursor/*
@@ -46,6 +65,26 @@ pnpm-debug.log*
 ehthumbs.db
 Thumbs.db
 
+# Next.js
+.vercel
+.next
+next-env.d.ts
+
 # Optional
-*.log
 output.txt
+
+# cache
+.cache
+.turbo
+
+# local data
+data/
+tmp/
+temp/
+
+# AI/ML related
+.vectorstore/
+.embeddings/
+
+# Optional
+**/.DS_Store

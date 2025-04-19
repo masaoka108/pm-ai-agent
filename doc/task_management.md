@@ -15,6 +15,10 @@
 
     Multi Agent Workflowで実現する（WorkflowはMastra側が完全じゃないのでMastra Devを使うのはやめてオリジナルのサーバーを構築する）
     https://mastra.ai/examples/agents/multi-agent-workflow
+      -> オリジナルサーバー next.jsで立てたがPlaywright MCPがうまく動かなかった
+      []この方法でMastra serverにオリジナルEndpointを追加してWorkflowを実現する
+        https://mastra.ai/ja/docs/deployment/server
+          - pnpm run dev で起動すると mastra serverもCustom APIも動く
 
 [] 設定（Slack、Notion （Gmail、G Drive））を入力する画面
   -  Notion

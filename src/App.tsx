@@ -1,9 +1,31 @@
 import { useState } from 'react';
 import { MastraClient } from '@mastra/client-js';
 import { Mastra } from '@mastra/core';
+// import { registerApiRoute } from "@mastra/core/server";
+
 
 // Mastraのインスタンスを作成
-const mastra = new Mastra({});
+const mastra = new Mastra({
+  // server: {
+  //   apiRoutes: [
+  //     registerApiRoute("/my-custom-route", {
+  //       method: "GET",
+  //       handler: async (c) => {
+  //         console.log("aaaaahhhhh");
+  //         // // you have access to mastra instance here
+  //         // const mastra = c.get("mastra");
+ 
+  //         // // you can use the mastra instance to get agents, workflows, etc.
+  //         // const agents = await mastra.getAgent("my-agent");
+ 
+  //         // return c.json({ message: "Hello, world!" });
+  //         return c.json({ message: "Hello, world!" });
+  //       },
+  //     }),
+  //   ],
+  // },  
+
+});
 
 // クライアントインスタンスを作成
 const client = new MastraClient({

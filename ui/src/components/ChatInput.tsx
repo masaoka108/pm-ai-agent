@@ -28,26 +28,7 @@ export const ChatInput: React.FC<Props> = ({ onSend, initialMessage = true }) =>
     onSend(trimmed);
     setMessage('');
 
-    // APIへPOSTリクエスト
-    try {
-      const res = await fetch('http://localhost:4111/capi/pm-workflow', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ p: trimmed }),
-      });
-
-      if (!res.ok) {
-        console.error('APIリクエストに失敗しました', res.statusText);
-        return;
-      }
-
-      const data = await res.json();
-      console.log('APIレスポンス:', data);
-    } catch (error) {
-      console.error('API呼び出し中にエラーが発生しました', error);
-    }
+    // ChatInput ではサーバー呼び出しを行わず、親コンポーネントに委譲する
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {

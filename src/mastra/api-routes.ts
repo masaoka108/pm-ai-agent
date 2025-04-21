@@ -39,8 +39,16 @@ export const customApiRoutes = [
       });
 
       console.log("Workflow Results: ", res.results);
+      // taskSummaryStep の結果を抽出
+      const taskSummary: string | undefined = (res?.results as any)?.taskSummaryStep?.output?.taskSummary;
 
-      return c.json({ message: res.results.taskSummary });
+      console.log("taskSummary: ", taskSummary);
+
+      if (!taskSummary) {
+        return c.json({ error: "taskSummary が取得できませんでした" }, 500);
+      }
+
+      return c.json({ message: taskSummary });
     },
   }),
   

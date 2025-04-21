@@ -88,22 +88,23 @@ function App() {
     setIsLoading(true);
     
     try {
-      // // coachingAgentとの対話を開始
-      // const agent = mastra.getAgent('coachingAgent');
-      // pmAgentとの対話を開始
-      const agent = mastra.getAgent('pmAgent');
-      const response = await agent.generate({
-        messages: [{
-          role: 'user',
-          content: content
-        }],
-        threadId: currentEntry.id,
-        resourceId: currentEntry.userId,
+      // pm‑workflow を呼び出して結果を取得
+      const workflowRes = await fetch('http://localhost:4111/capi/pm-workflow', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ p: content }),
       });
 
+      if (!workflowRes.ok) {
+        throw new Error(`Workflow API Error: ${workflowRes.statusText}`);
+      }
+
+      const workflowData: { message?: string } = await workflowRes.json();
       const assistantMessage: Message = {
         id: uuidv4(),
-        content: response.text,
+        content: workflowData.message ?? 'Workflow の結果を取得できませんでした。',
         role: 'assistant',
         timestamp: new Date().toISOString(),
       };

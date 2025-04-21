@@ -20,10 +20,33 @@ export const ChatInput: React.FC<Props> = ({ onSend, initialMessage = true }) =>
     }
   }, []); // 依存配列を空にして、マウント時のみ実行
 
-  const handleSend = () => {
-    if (message.trim()) {
-      onSend(message.trim());
-      setMessage('');
+  const handleSend = async () => {
+    const trimmed = message.trim();
+    if (!trimmed) return;
+
+    // まずUI更新のために親コールバックを呼ぶ
+    onSend(trimmed);
+    setMessage('');
+
+    // APIへPOSTリクエスト
+    try {
+      const res = await fetch('http://localhost:4111/capi/pm-workflow', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ p: trimmed }),
+      });
+
+      if (!res.ok) {
+        console.error('APIリクエストに失敗しました', res.statusText);
+        return;
+      }
+
+      const data = await res.json();
+      console.log('APIレスポンス:', data);
+    } catch (error) {
+      console.error('API呼び出し中にエラーが発生しました', error);
     }
   };
 

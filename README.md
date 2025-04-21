@@ -3,7 +3,9 @@
 ## バックエンド（Mastra）の起動方法
 - .env.development の作成
 npm install
-mastra dev
+pnpm run dev
+- なぜか mastra dev ではカスタムAPIが起動しない
+
 
 ## フロントPJの起動方法
 - .envを作成

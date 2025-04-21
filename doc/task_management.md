@@ -5,7 +5,7 @@
 プランニング->実行をループしてタスク終了まで遂行する。->メール送信などにんげんの確認が必要なもの、相談が必要なものはHuman in the loopで確認して進行->完了したらSlackで連絡する。**
 
 [] 必要なWorkflowは何か？
-  → 情報収集(notion/slack) 
+  → 情報収集(notion/slack)  notionTaskAgent,notionScheduleAgent, slackAgent
   → タスク洗い出し 
   (ここでHITL)
   → プランニング 
@@ -16,7 +16,7 @@
     Multi Agent Workflowで実現する（WorkflowはMastra側が完全じゃないのでMastra Devを使うのはやめてオリジナルのサーバーを構築する）
     https://mastra.ai/examples/agents/multi-agent-workflow
       -> オリジナルサーバー next.jsで立てたがPlaywright MCPがうまく動かなかった
-      []この方法でMastra serverにオリジナルEndpointを追加してWorkflowを実現する
+      ▪️この方法でMastra serverにオリジナルEndpointを追加してWorkflowを実現する
         https://mastra.ai/ja/docs/deployment/server
           - pnpm run dev で起動すると mastra serverもCustom APIも動く
 

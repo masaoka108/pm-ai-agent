@@ -15,21 +15,29 @@ export const google = createGoogleGenerativeAI({
 
 const mcp = new MCPConfiguration({
   servers: {
+    // Playwright browser automation server
     playwright: {
       command: 'npx',
       args: [
         '@playwright/mcp@latest',
       ],
     },
-    // "supabase": {
-    //   "command": "npx",
-    //   "args": [
-    //     "-y",
-    //     "@supabase/mcp-server-supabase@latest",
-    //     "--access-token",
-    //     "sbp_b62e7bfeff48e4227ab3fd1d45c93e3cbcb256dc"
-    //   ]
-    // },
+    
+    // Official Notion MCP server (https://github.com/makenotion/notion-mcp-server)
+    notionApi: {
+      command: 'npx',
+      args: [
+        '-y',
+        '@notionhq/notion-mcp-server',
+      ],
+      // Notion API token とバージョンをヘッダで渡す
+      env: {
+        OPENAPI_MCP_HEADERS: JSON.stringify({
+          Authorization: `Bearer ${process.env.NOTION_API_TOKEN || 'ntn_****'}`,
+          'Notion-Version': '2022-06-28',
+        }),
+      },
+    },
 
     // // stdio example
     // sequential: {
@@ -50,6 +58,20 @@ const mcp = new MCPConfiguration({
     // },
   },
 });
+
+const mcpPlaywright = new MCPConfiguration({
+  servers: {
+    // Playwright browser automation server
+    playwright: {
+      command: 'npx',
+      args: [
+        '@playwright/mcp@latest',
+        '--user-data-dir=.pwdata',
+      ],
+    },
+  },
+});
+
 
 // export const weatherAgent = new Agent({
 //   name: 'Weather Agent',
@@ -117,6 +139,7 @@ const toolsets = await mcp.getToolsets();
 // });
 
 
+
 // await coachingAgent.stream("目標を設定するためには何をするべきですか？", 
 //   {
 //     threadId: "project_123",
@@ -131,66 +154,158 @@ export const pmAgent = new Agent({
   // memory,
   name: 'PM Agent',
   // instructions: 'あなたはウェブサイトにアクセスして情報を取得するエージェントです。',
-  instructions: `
-  あなたは有能なプロジェクトマネージャーです。あなたの役割は、以下の業務を自律的にかつ安全に実行することです：
-  ウェブサイトにアクセスして情報を取得することもできるエージェントです。
+//   instructions: `
+//   あなたは有能なプロジェクトマネージャーです。あなたの役割は、以下の業務を自律的にかつ安全に実行することです：
+//   ウェブサイトにアクセスして情報を取得することもできるエージェントです。
 
-  1. Slack、Notion、Google Driveなどから最新のプロジェクト情報を収集し、状況を把握する。
-  2. 収集情報から本日のタスクを抽出し、タスクリストを作成・PMに提示する（Human-in-the-loop①）。
-  3. 承認済みタスクリストに基づき、タスクの優先順位、依存関係、担当割り振りを決定し、計画を策定する（Human-in-the-loop②）。
-  4. 各タスクを実行し、結果を記録。重大な変更や外部への通知は実施前に必ず確認する（Human-in-the-loop③）。
-  5. 一日の進捗レポートを作成し、Notion及びSlackで共有する（Human-in-the-loop④）。
+//   1. Slack、Notion、Google Driveなどから最新のプロジェクト情報を収集し、状況を把握する。
+//   2. 収集情報から本日のタスクを抽出し、タスクリストを作成・PMに提示する（Human-in-the-loop①）。
+//   3. 承認済みタスクリストに基づき、タスクの優先順位、依存関係、担当割り振りを決定し、計画を策定する（Human-in-the-loop②）。
+//   4. 各タスクを実行し、結果を記録。重大な変更や外部への通知は実施前に必ず確認する（Human-in-the-loop③）。
+//   5. 一日の進捗レポートを作成し、Notion及びSlackで共有する（Human-in-the-loop④）。
 
-  【使用可能なツールと呼び出し方法】
-  - SlackTool: SlackTool.send_message(channel, text)
-  - NotionTool: NotionTool.create_page(database_id, properties)
-  - DriveTool: DriveTool.find_file(query)
+//   【使用可能なツールと呼び出し方法】
+//   - SlackTool: SlackTool.send_message(channel, text)
+//   - NotionTool: NotionTool.create_page(database_id, properties)
+//   - DriveTool: DriveTool.find_file(query)
 
-  【思考方針】
-  1. Step 1: 入力情報（Slack, Notion, Google Drive）を整理する。
-  2. Step 2: タスク候補を抽出し、実施優先順位を論理的に整理する。
-  3. Step 3: 必要に応じてツールを利用（例：SlackTool.send_message(...)）し、実行結果を検証する。
-  4. 判断に迷った場合や重要なアクションは必ずPMに確認し、承認プロンプトを生成すること。
+//   【思考方針】
+//   1. Step 1: 入力情報（Slack, Notion, Google Drive）を整理する。
+//   2. Step 2: タスク候補を抽出し、実施優先順位を論理的に整理する。
+//   3. Step 3: 必要に応じてツールを利用（例：SlackTool.send_message(...)）し、実行結果を検証する。
+//   4. 判断に迷った場合や重要なアクションは必ずPMに確認し、承認プロンプトを生成すること。
 
-  【注意事項】
-  - 最新情報に基づいて判断し、事実関係の補完は行わない。
-  - ツール実行後は必ず結果を確認し、必要な場合はPMへ報告・確認を求める。
-  - 機密情報の取り扱いに注意し、公開チャネルへの不適切な情報送信は行わない。
+//   【注意事項】
+//   - 最新情報に基づいて判断し、事実関係の補完は行わない。
+//   - ツール実行後は必ず結果を確認し、必要な場合はPMへ報告・確認を求める。
+//   - 機密情報の取り扱いに注意し、公開チャネルへの不適切な情報送信は行わない。
 
-  【具体的な指示例】
-  "本日のSlackに未読のメンションおよび#プロジェクト進行チャンネルの新規メッセージから、重要なタスク依頼を抽出し、タスクリストの下書きを作成してください。その上で、'以下のタスクリストで進めます。ご確認ください。'とSlackのDMに送信する形でPMへ提示してください。"
+//   【具体的な指示例】
+//   "本日のSlackに未読のメンションおよび#プロジェクト進行チャンネルの新規メッセージから、重要なタスク依頼を抽出し、タスクリストの下書きを作成してください。その上で、'以下のタスクリストで進めます。ご確認ください。'とSlackのDMに送信する形でPMへ提示してください。"
+// `,
+instructions: `
+あなたはNotion MCPサーバーを通じてプロジェクトのタスク情報を取得・整理する専任エージェントです。  
+与えられたNotionページ／データベースからメインタスクはもちろん、ネストされたサブタスク（チェックリスト・ToDo・リレーションDB内タスクなど）まで**すべて**漏れなく確認し、構造化された形式で出力してください。  
 
+【使用ツール】  
+- NotionTool (MCP) : データベース／ページの読み取り、プロパティ取得、リレーション追跡 など  
 
+【手順】  
+1. NotionTool.open(url) で対象のページまたはデータベースを取得する。  
+2. ページ内のデータベースブロックを検出し、各行を走査してタスクを抽出する。  
+3. 各タスクについて以下の属性を取得する：タイトル、ステータス、担当者、期日、依存関係、サブタスクへのリンク。  
+4. Sub‑tasks・チェックリスト・ToDo など階層構造を持つ要素は NotionTool.follow_relation(...) 等を用いて再帰的にたどり、**全サブタスクを必ず取得**する。  
+5. 抽出した情報を階層構造を保持した JSON 形式でまとめる。  
+6. 完了済み（Done／Complete／Closed 等）のタスクは除外する。  
+7. 不明点や抜け漏れがある場合は notes フィールドに「要確認」と明記する。  
+
+【出力フォーマット例】  
+{
+  "tasks": [
+    {
+      "title": "タスク名",
+      "status": "未着手",
+      "assignee": "担当者名または未設定",
+      "due_date": "期日または未設定",
+      "dependencies": ["依存タスクA", "依存タスクB"],
+      "subtasks": [
+        {
+          "title": "サブタスク1",
+          "status": "進行中",
+          "assignee": "未設定",
+          "due_date": "未設定",
+          "subtasks": []
+        }
+      ],
+      "notes": ""
+    }
+  ]
+}  
+
+【注意】  
+- 取得範囲に漏れがないか二重確認し、サブタスク有無を常に検証する。  
+- MCP／NotionTool 実行後はレスポンスを検証し、エラーがあればリトライまたは「要確認」として報告する。  
+- 機密情報の取扱いに留意し、公開不要な情報を出力に含めないこと。  
 `,
+
   model: openai('gpt-4o'),
   // model: google("gemini-2.0-flash-001"),
   // tools: { saveCoachingDataTool, },
   tools: await mcp.getTools(),
 });
 
-export const notionTaskAgent = new Agent({
+export const playwrightMcpNotionTaskAgent = new Agent({
+  // memory,
+  name: 'playwright MCP notion task Agent',
+  instructions: `
+  あなたはPlaywright MCPサーバーを通じてブラウザ操作し、Notionページからタスクを抽出するエージェントです。
+
+  【使用ツール】
+  - browser_navigate(url): ページ移動
+  - browser_waitForSelector(selector): 要素表示待機
+  - browser_click(element, ref): 要素クリック
+  - browser_snapshot(): DOMスナップショット取得
+  - browser_evaluate(script): ページ上でスクリプト実行
+  - browser_tab_new(): 新規タブ作成
+  - browser_tab_select(index): タブ切替
+  - browser_navigate_back(): 戻る
+
+  # 手順
+  1. browser_navigate(url) で Notion のデータベースビューに移動。
+  2. browser_waitForSelector('.notion-collection-view') で一覧の読み込み完了を確認。
+  3. browser_snapshot() で '.notion-collection-item' の要素リストを取得し、各アイテムの element/ref を特定。
+  4. 各タスク行について:
+      4.1 browser_click(element, ref) で詳細ページへ遷移。
+      4.2 browser_snapshot() で詳細ページのチェックリストやネストしたタスクを含む要素を取得。
+      4.3 サブタスクも同様に走査して titles/status 等を抽出。
+      4.4 browser_navigate_back() で一覧に戻る。
+  5. 抽出したテキストからタイトル、ステータス、担当者、期日、依存関係、サブタスクを構造化して JSON を生成。
+  6. 完了済みタスク(Done/Closed)は除外し、要確認箇所は notes に記載。
+
+  # 出力フォーマット
+  {
+    "tasks": [
+      {
+        "title": "タスク名",
+        "status": "ステータス",
+        "assignee": "担当者",
+        "due_date": "期日",
+        "dependencies": ["依存タスクA"],
+        "subtasks": ["サブタスク1", ...],
+        "notes": ""
+      }
+    ]
+  }
+  `,
+  model: openai('gpt-4o'),
+  tools: await mcpPlaywright.getTools(),
+});
+
+
+export const notionMcpTaskAgent = new Agent({
   // memory,
   name: 'notion task Agent',
   instructions: `
-  あなたは有能なプロジェクトマネージャーです。提供されたNotionのURLにブラウザ経由でアクセスし（Playwright MPCを通じて）、その内容を精査してください。あなたの目的は、進捗確認が必要なすべての「タスク」を特定し、プロジェクト管理の観点から明確かつ構造的に抽出することです。
+  あなたは有能なプロジェクトマネージャーです。Notion MCP サーバー経由で Notion API を呼び出し、対象のページ/データベースを精査してください。あなたの目的は、進捗確認が必要なすべての「タスク」を特定し、プロジェクト管理の観点から明確かつ構造的に抽出することです。
 
   以下の観点を意識して分析してください：
   - タスクのタイトル・内容
   - 担当者（Assignされたメンバー）
   - ステータス（未着手／進行中／完了 など）
   - 締切や期日が設定されているか
-  - サブタスクも全て確認してください
+  - サブタスク（ネストされたタスク / 関連 DB / チェックリスト内 ToDo など）も**必ず**抽出してください
 
   また、曖昧な記述や不明瞭な点がある場合は「要確認」としてマークしてください。
 
   # Steps
 
-  1. Notionページをブラウザ経由で読み取り、セクションやデータベースを認識。
-  2. タスクと考えられる要素をリストアップ。
-  3. 各タスクについて、プロジェクトマネージャーとして確認すべきポイントを抽出。
-  4. タスクの優先度や依存関係が読み取れる場合は、それも明示。
-  5. 「未整理」「不明確」な情報はフラグを立てる。
-  6. ステータスが「完了」「Done」「Closed」「Pending」などのタスクは無視してください。出力に決して含まないでください。
+  1. NotionTool.search または NotionTool.retrieve\_database で対象 DB を取得し、行（ページ） ID を列挙。
+  2. 各行に対して NotionTool.retrieve\_page と NotionTool.retrieve\_block\_children を呼び、サブタスクやチェックリストを再帰的に収集。
+  3. 取得したデータを走査してタスク属性（タイトル、ステータス、担当者、期日など）を抽出。
+  4. サブページ / リレーション DB がある場合は NotionTool.follow\_relation を用いて深掘りし、subtasks 配列に格納。
+  5. タスクの優先度や依存関係が読み取れる場合は dependencies に明示。
+  6. 不明確な情報は notes フィールドに "要確認" と記載。
+  7. ステータスが "完了" "Done" "Closed" などのタスクは除外する。
 
   # Output Format
 
@@ -204,6 +319,7 @@ export const notionTaskAgent = new Agent({
         "assignee": "[担当者名または未設定]",
         "due_date": "[期日 or 未設定]",
         "dependencies": ["[依存タスクA]", "[依存タスクB]"],
+        "subtasks": ["[サブタスク1]", "[サブタスク2]"],
         "notes": "[補足情報や不明点]"
       },
       ...
@@ -212,8 +328,8 @@ export const notionTaskAgent = new Agent({
 
   # Notes
 
-  - Playwright MPCによるNotionページへのブラウザアクセスを前提としています。
-  - すべてのデータベースブロック、チェックリスト、ToDoリストなどが抽出対象です。
+  - Notion MCP サーバー経由で Notion API を呼び出すことを前提としています。
+  - すべてのデータベースブロック、チェックリスト、ToDo リストなどが抽出対象です。
   - 「進捗確認が必要」なタスクに絞って抽出してください。
   - 曖昧な内容はそのままにせず、要確認として明記してください。
 

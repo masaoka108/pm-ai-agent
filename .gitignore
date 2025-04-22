@@ -88,3 +88,6 @@ temp/
 
 # Optional
 **/.DS_Store
+
+# Playwright persistent context directory
+.pwdata/

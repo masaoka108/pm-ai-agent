@@ -44,11 +44,30 @@ export const customApiRoutes = [
 
       console.log("taskSummary: ", taskSummary);
 
-      if (!taskSummary) {
-        return c.json({ error: "taskSummary が取得できませんでした" }, 500);
+      let message: string | undefined = taskSummary;
+
+      // notionTaskStep の結果がある場合は fallback 用に確保
+      const notionTask: string | undefined = (res?.results as any)?.notionTaskStep?.output?.notionTask;
+
+      // 最低でもどちらかは返せるようにする
+      if (!message && notionTask) {
+        message = notionTask;
       }
 
-      return c.json({ message: taskSummary });
+      // さらに fallback でも取得できなければワークフロー実行時のエラー内容を文字列化
+      if (!message) {
+        message = 'ワークフローの出力が取得できませんでした。';
+      }
+
+      // バッククォート3つで囲まれたコードブロックを除去
+      const sanitized = message.replace(/```/g, "").trim();
+
+      // CORS ヘッダを追加
+      c.header('Access-Control-Allow-Origin', '*');
+      c.header('Access-Control-Allow-Headers', 'Content-Type');
+
+      // 必ず 200 OK で返し、フロント側で内容を表示可能にする
+      return c.json({ message: sanitized });
     },
   }),
   

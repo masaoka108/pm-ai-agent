@@ -13,7 +13,6 @@ export const customApiRoutes = [
 
       const response = await agents.generate("https://qiita.com/tomada/items/b992245a4162ddeb1f6e のタイトルを教えて");
 
-      console.log(response);
       return c.json({ message: response.text });
     },
   }),

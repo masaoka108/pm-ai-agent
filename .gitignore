@@ -88,3 +88,7 @@ temp/
 
 # Optional
 **/.DS_Store
+# Local credential evidence
+.secret/
+.env*
+!.env.example

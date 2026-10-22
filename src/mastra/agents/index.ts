@@ -2,7 +2,7 @@ import { openai } from '@ai-sdk/openai';
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { Agent } from '@mastra/core/agent';
 // import { weatherTool, saveCoachingDataTool } from '../tools';
-import { Memory } from "@mastra/memory";
+import { createBrowserServers } from "../security/browser-server.mjs";
 import { MCPConfiguration } from "@mastra/mcp";
 
 import { Step, Workflow } from "@mastra/core/workflows";
@@ -13,43 +13,7 @@ export const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY || "",
 });
 
-const mcp = new MCPConfiguration({
-  servers: {
-    playwright: {
-      command: 'npx',
-      args: [
-        '@playwright/mcp@latest',
-      ],
-    },
-    // "supabase": {
-    //   "command": "npx",
-    //   "args": [
-    //     "-y",
-    //     "@supabase/mcp-server-supabase@latest",
-    //     "--access-token",
-    //     "sbp_b62e7bfeff48e4227ab3fd1d45c93e3cbcb256dc"
-    //   ]
-    // },
-
-    // // stdio example
-    // sequential: {
-    //   name: "sequential-thinking",
-    //   server: {
-    //     command: "npx",
-    //     args: ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-    //   },
-    // },
-    // // SSE example
-    // weather: {
-    //   url: new URL("http://localhost:8080/sse"),
-    //   requestInit: {
-    //     headers: {
-    //       Authorization: "Bearer your-token",
-    //     },
-    //   },
-    // },
-  },
-});
+const mcp = new MCPConfiguration({ servers: createBrowserServers() });
 
 // export const weatherAgent = new Agent({
 //   name: 'Weather Agent',
@@ -69,17 +33,6 @@ const mcp = new MCPConfiguration({
 //   model: google("gemini-2.0-flash-001"),
 //   tools: { weatherTool },
 // });
-
-const memory = new Memory({
-  embedder: openai.embedding("text-embedding-3-small"),
-  options: {
-    lastMessages: 5, // Keep 5 most recent messages
-  },
-});
-      
-// Get the current toolsets configured for this user
-const toolsets = await mcp.getToolsets();
-
 
 // export const coachingAgent = new Agent({
 //   memory,
@@ -191,27 +144,22 @@ export const copywriterStep = new Step({
   id: "copywriterStep",
   execute: async ({ context }) => {
     try {
-      console.log('copywriterStep開始', context);
       
       if (!context?.triggerData?.topic) {
-        console.error('Context:', context);
         throw new Error("Topic not found in trigger data");
       }
       
-      console.log('トピック:', context.triggerData.topic);
       
       const result = await copywriterAgent.generate(
         `Create a blog post about ${context.triggerData.topic}`,
       );
       
-      console.log("copywriter result:", result.text);
       
       return {
         copy: result.text,
       };
     } catch (error) {
-      console.error('copywriterStep エラー:', error);
-      throw error;
+      throw new Error("Agent workflow step failed");
     }
   },
 });
@@ -226,30 +174,24 @@ export const editorStep = new Step({
   id: "editorStep",
   execute: async ({ context }) => {
     try {
-      console.log('editorStep開始', context);
       
       const copy = context?.getStepResult<{ copy: string }>("copywriterStep")?.copy;
       
       if (!copy) {
-        console.error('Context:', context);
-        console.error('copywriterStepの結果がありません');
         throw new Error("No copy to edit");
       }
       
-      console.log('編集するテキスト長さ:', copy.length);
       
       const result = await editorAgent.generate(
         `Edit the following blog post only returning the edited copy: ${copy}`,
       );
       
-      console.log("editor result:", result.text);
       
       return {
         copy: result.text,
       };
     } catch (error) {
-      console.error('editorStep エラー:', error);
-      throw error;
+      throw new Error("Agent workflow step failed");
     }
   },
 });

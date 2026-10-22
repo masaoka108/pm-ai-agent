@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test tests/*.test.mjs",
     "dev": "mastra dev"
   },
   "keywords": [],
@@ -23,12 +23,16 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "mastra": "^0.4.8",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "@playwright/mcp": "0.0.83"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.14.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=24.22.1 <25"
   }
 }
